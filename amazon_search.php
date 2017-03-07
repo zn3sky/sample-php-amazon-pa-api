@@ -29,12 +29,13 @@ if (!PEAR::isError($response)) {
 	echo "<hr>";
 
 	foreach ($response["Item"] as $item) {
+		// 商品ID
 		echo "ASIN:<a href=\"{$item['DetailPageURL']}\">{$item["ASIN"]}</a>(親ASIN:{$item["ParentASIN"]})<br>";
 		// 画像
 		echo "<img src=\"", htmlspecialchars($item["SmallImage"]["URL"]), "\">";
 		echo "<img src=\"", htmlspecialchars($item["MediumImage"]["URL"]), "\">";
-		//echo "<img src=\"", htmlspecialchars($item["LargeImage"]["URL"]), "\">";
-		
+		echo "<a href=\"", htmlspecialchars($item["LargeImage"]["URL"]), "\" target=\"_brank\">大きな画像をみる</a><br>";
+		// 商品詳細
 		foreach ($item["ItemAttributes"] as $title => $attr) {
 			if (!is_array($attr)) {
 				echo htmlspecialchars($title), ":", htmlspecialchars($attr), "<br>";
