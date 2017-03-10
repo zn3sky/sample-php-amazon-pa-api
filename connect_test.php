@@ -13,7 +13,13 @@ $amazon = new Services_Amazon(AWS_ACCESSKEYID, AWS_SECRETKEY, AWS_ASSOCIATEID);
 $amazon->setLocale('JP');
 $response = $amazon->ItemSearch('All', array('Keywords' => 'トレンチコート'));
 
-var_dump($response);
+//var_dump($response);
 
+
+if (!PEAR::isError($response)) {
+	echo "接続成功";
+} else {
+	echo "接続失敗";
+}
 ?>
 </pre>
