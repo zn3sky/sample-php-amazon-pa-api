@@ -11,13 +11,15 @@ $amazon = new Services_Amazon(AWS_ACCESSKEYID, AWS_SECRETKEY, AWS_ASSOCIATEID);
 $amazon->setLocale('JP');
 
 // TODO 
-$keyword = "トレンチコート";
+$keyword = "レディース　トレンチコート";
 $searchindex = "Apparel";
+
 $opt = array(
 	"Keywords" => $keyword,
 	"Sort" => "salesrank",// Allの場合は指定できない
 	// http://docs.aws.amazon.com/AWSECommerceService/latest/DG/CHAP_ResponseGroupsList.html
 	"ResponseGroup" => "BrowseNodes,Medium,Variations"
+	//"ResponseGroup" => "Images"
 );
 
 $response = $amazon->ItemSearch($searchindex, $opt);
@@ -48,9 +50,9 @@ $response = $amazon->ItemSearch($searchindex, $opt);
 <form>
 <div class="form-group">
 <span class="label label-info">searchindex</span>
-<input type="text" name="searchindex" value="<?=htmlspecialchars($searchindex)?>" disabled>
+<input type="text" name="searchindex" size="10" value="<?=htmlspecialchars($searchindex)?>" disabled>
 <span class="label label-info">キーワード</span>
-<input type="text" name="keyword" value="<?=htmlspecialchars($keyword)?>" disabled>
+<input type="text" name="keyword" size="30" value="<?=htmlspecialchars($keyword)?>" disabled>
 </div>
 <!--<button type="submit">検索</button>-->
 </form>
@@ -63,9 +65,6 @@ if (!PEAR::isError($response)) {
 	echo "<div>{$response['TotalResults']}件みつかりました</div>";
 
 	echo "<a href=\"{$response['MoreSearchResultsUrl']}\" target=\"_blank\">検索結果をもっとみる（amazonページへ）</a>";
-	
-	echo "<hr>";
-	
 	
 	// 検索結果表示
 	echo "<table class=\"table table-hover\">";
@@ -96,10 +95,13 @@ function dispItem($itemList) {
 	echo "<ul class=\"list-group\">";
 
 	foreach ($itemList as $key => $val) {
-		// 大きめ画像はスキップ
-		if ($key == "MediumImage" || $key == "LargeImage") {
-			continue;
+		// 画像が各種多数帰ってくるのでMediumImageのみ表示
+		if (preg_match("/Image/", $key)) {
+			if ($key != "MediumImage") {
+				continue;
+			}
 		}
+		
 		// 画像の縦横サイズはスキップ
 		if ($key == "Height" || $key == "Width") {
 			continue;
@@ -130,7 +132,6 @@ function dispItem($itemList) {
 	}
 	
 	echo "</ul>";
-	
 }
 ?>
 
