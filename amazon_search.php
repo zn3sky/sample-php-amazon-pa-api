@@ -1,5 +1,5 @@
 <?php
-require_once('Services/Amazon.php');
+require_once("Services/Amazon.php");
 // 接続情報定義
 require_once("Define.php");
 // defineには下記を設定
@@ -7,11 +7,27 @@ require_once("Define.php");
 //define("AWS_SECRETKEY", "シークレットキーF");
 //define("AWS_ASSOCIATEID", "アソシエイトプログラムのトラッキングID");
 
+define("GITHUB_URL_BASE", "https://github.com/zn3sky/");
+define("REPOSITORY_NAME", "sample-php-amazon-pa-api");
+define("MAX_KEYWORD_COUNT", 20);
+
+
 $amazon = new Services_Amazon(AWS_ACCESSKEYID, AWS_SECRETKEY, AWS_ASSOCIATEID);
 $amazon->setLocale('JP');
 
-// TODO 
-$keyword = "レディース　トレンチコート";
+// 検索キーワード
+$keyword = "";
+if (!empty($_POST["keyword"])) {
+	$keyword = $_POST["keyword"];
+	if (mb_strlen($keyword) > MAX_KEYWORD_COUNT) {
+		// 不正な遷移
+		http_response_code( 404 );
+		exit;
+	}
+} else {
+	$keyword = "レディース　トレンチコート";
+}
+// サーチインデックス
 $searchindex = "Apparel";
 
 $opt = array(
@@ -31,7 +47,7 @@ $response = $amazon->ItemSearch($searchindex, $opt);
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>sample-php-amazon-pa-api</title>
+<title><?=REPOSITORY_NAME?></title>
 <link href="/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
 <!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -42,22 +58,21 @@ $response = $amazon->ItemSearch($searchindex, $opt);
 <div class="container-fluid">
 
 <div class="jumbotron">
-<h1>sample-php-amazon-pa-api</h1>
-<p><a href="https://github.com/zn3sky/sample-php-amazon-pa-api.git">https://github.com/zn3sky/sample-php-amazon-pa-api.git</a></p>
+<h1><?=REPOSITORY_NAME?></h1>
+<p><a href="<?=GITHUB_URL_BASE?><?=REPOSITORY_NAME?>.git"><?=GITHUB_URL_BASE?><?=REPOSITORY_NAME?>.git</a></p>
 </div>
 
 
-<form>
+<form method="POST">
 <div class="form-group">
 <span class="label label-info">searchindex</span>
 <input type="text" name="searchindex" size="10" value="<?=htmlspecialchars($searchindex)?>" disabled>
-<span class="label label-info">キーワード</span>
-<input type="text" name="keyword" size="30" value="<?=htmlspecialchars($keyword)?>" disabled>
+<span class="label label-info">キーワード(<?=MAX_KEYWORD_COUNT?>文字まで)</span>
+<input type="text" name="keyword" size="30" value="<?=htmlspecialchars($keyword)?>">
 </div>
-<!--<button type="submit">検索</button>-->
+<button type="submit">検索</button>
 </form>
 <?php
-
 // 検索結果表示
 if (!PEAR::isError($response)) {
 
@@ -81,7 +96,7 @@ if (!PEAR::isError($response)) {
 	echo "</table>";
 	
 } else {
-	echo "一時的にamazonのAPIが応答しません。しばらくたってから再読み込みしてください。";
+	echo "一時的にamazonのAPIが応答しません。しばらくたってから再検索してください。";
 	
 	//dubug
 	//echo "<pre>";
