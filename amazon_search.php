@@ -63,7 +63,7 @@ $response = $amazon->ItemSearch($searchindex, $opt);
 </div>
 
 
-<form method="POST">
+<form method="POST" name="SEARCH_FORM" onSubmit="return formCheck();">
 <div class="form-group">
 <span class="label label-info">searchindex</span>
 <input type="text" name="searchindex" size="10" value="<?=htmlspecialchars($searchindex)?>" disabled>
@@ -72,6 +72,24 @@ $response = $amazon->ItemSearch($searchindex, $opt);
 </div>
 <button type="submit">検索</button>
 </form>
+<script type="text/javascript">
+<!--
+function formCheck(){
+	var flag = 0;
+	var input_length = document.SEARCH_FORM.keyword.value.length;
+	
+	if (input_length == 0){
+		alert("検索キーワードを入力してください");
+		return false;
+	} else if(input_length > <?=MAX_KEYWORD_COUNT?>) {
+		alert("キーワードは<?=MAX_KEYWORD_COUNT?>文字までです。");
+		return false;
+	}
+	
+	return true;
+}
+// -->
+</script>
 <?php
 // 検索結果表示
 if (!PEAR::isError($response)) {
